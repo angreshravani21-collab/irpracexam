@@ -1,0 +1,484 @@
+# ============================================================
+# IR PRACTICALS — ALL CODES
+# ============================================================
+
+
+# ============================================================
+# PRACTICAL 1 — INVERTED INDEX
+# ============================================================
+
+docs = {}
+
+n = int(input("Enter number of documents: "))
+
+for i in range(1, n + 1):
+    text = input("Enter document: ").lower().split()
+    docs[i] = text
+
+index = {}
+
+for doc in docs:
+    for word in docs[doc]:
+        if word not in index:
+            index[word] = []
+        if doc not in index[word]:
+            index[word].append(doc)
+
+print("\nInverted Index:")
+
+for word in sorted(index):
+    print(word, "->", index[word])
+
+
+# ============================================================
+# PRACTICAL 2A — BOOLEAN RETRIEVAL
+# ============================================================
+
+docs = []
+
+n = int(input("Enter number of docs: "))
+
+for i in range(n):
+    docs.append(input("Enter document: ").lower().split())
+
+word = input("Enter search word: ").lower()
+
+print("Documents containing", word, ":")
+
+for i in range(n):
+    if word in docs[i]:
+        print("D", i + 1)
+
+
+# ============================================================
+# PRACTICAL 2B — VECTOR SPACE MODEL
+# ============================================================
+
+import math
+
+docs = []
+
+n = int(input("Enter number of docs: "))
+
+for i in range(n):
+    docs.append(input("Enter document: ").lower().split())
+
+query = input("Enter query: ").lower().split()
+
+words = []
+
+for doc in docs:
+    for word in doc:
+        if word not in words:
+            words.append(word)
+
+for i in range(n):
+
+    dot = 0
+    d1 = 0
+    q1 = 0
+
+    for word in words:
+
+        a = docs[i].count(word)
+        b = query.count(word)
+
+        dot = dot + a * b
+        d1 = d1 + a * a
+        q1 = q1 + b * b
+
+    if d1 == 0 or q1 == 0:
+        sim = 0
+    else:
+        sim = dot / (math.sqrt(d1) * math.sqrt(q1))
+
+    print("Document", i + 1, "=", round(sim, 4))
+
+
+# ============================================================
+# PRACTICAL 3 — EDIT DISTANCE
+# ============================================================
+
+a = input("Enter first string: ")
+b = input("Enter second string: ")
+
+m = len(a)
+n = len(b)
+
+d = [[0] * (n + 1) for i in range(m + 1)]
+
+for i in range(m + 1):
+    d[i][0] = i
+
+for j in range(n + 1):
+    d[0][j] = j
+
+for i in range(1, m + 1):
+
+    for j in range(1, n + 1):
+
+        if a[i - 1] == b[j - 1]:
+            d[i][j] = d[i - 1][j - 1]
+
+        else:
+            d[i][j] = 1 + min(
+                d[i - 1][j],
+                d[i][j - 1],
+                d[i - 1][j - 1]
+            )
+
+for row in d:
+    print(row)
+
+print("Edit Distance =", d[m][n])
+
+
+# ============================================================
+# PRACTICAL 4 — PRECISION, RECALL AND F-MEASURE
+# ============================================================
+
+R = input("Enter Relevant Set: ").split(",")
+A = input("Enter Retrieved Set: ").split(",")
+
+common = []
+
+for x in A:
+    if x in R:
+        common.append(x)
+
+r = len(R)
+a = len(A)
+ra = len(common)
+
+print("Relevant R :", r)
+print("Retrieved A :", a)
+print("Common RA :", ra)
+print("Common Points:", ",".join(common))
+
+precision = ra / a
+recall = ra / r
+
+if precision + recall == 0:
+    f = 0
+else:
+    f = 2 * precision * recall / (precision + recall)
+
+print("Precision =", precision * 100, "%")
+print("Recall =", recall * 100, "%")
+print("F-measure =", f * 100, "%")
+
+
+# ============================================================
+# PRACTICAL 5 — NAIVE BAYES TEXT CATEGORIZATION
+# ============================================================
+
+data = [
+    ['Y','N','Y'],
+    ['N','Y','Y'],
+    ['Y','Y','Y'],
+    ['N','N','N'],
+    ['Y','N','Y'],
+    ['N','N','Y'],
+    ['Y','N','Y'],
+    ['Y','N','N'],
+    ['N','Y','Y'],
+    ['N','Y','N']
+]
+
+flu = input("Flu (Y/N): ").upper()
+covid = input("Covid (Y/N): ").upper()
+
+for fever in ['Y', 'N']:
+
+    rows = [r for r in data if r[2] == fever]
+
+    prior = len(rows) / len(data)
+
+    flu_prob = sum(r[1] == flu for r in rows) / len(rows)
+
+    covid_prob = sum(r[0] == covid for r in rows) / len(rows)
+
+    score = prior * flu_prob * covid_prob
+
+    print("\nFever =", fever)
+    print("P(Flu | Fever) =", round(flu_prob, 4))
+    print("P(Covid | Fever) =", round(covid_prob, 4))
+    print("P(Fever) =", prior)
+
+
+# ============================================================
+# PRACTICAL 6 — K-MEANS CLUSTERING
+# ============================================================
+
+import math
+
+data = [
+    ["C1",20,500],
+    ["C2",40,1000],
+    ["C3",30,800],
+    ["C4",18,300],
+    ["C5",28,1200],
+    ["C6",35,1400],
+    ["C7",45,1800]
+]
+
+k1 = [20,500]
+k2 = [40,1000]
+
+cluster1 = []
+cluster2 = []
+
+for row in data:
+
+    name = row[0]
+    x = row[1]
+    y = row[2]
+
+    d1 = math.sqrt((x-k1[0])**2 + (y-k1[1])**2)
+    d2 = math.sqrt((x-k2[0])**2 + (y-k2[1])**2)
+
+    if d1 < d2:
+        cluster1.append(name)
+    else:
+        cluster2.append(name)
+
+    print(name, "Distance K1 =", round(d1,2))
+    print(name, "Distance K2 =", round(d2,2))
+
+print("Cluster 1:", cluster1)
+print("Cluster 2:", cluster2)
+
+
+# ============================================================
+# PRACTICAL 7 — WEB CRAWLING AND INDEXING
+# ============================================================
+
+import requests
+from bs4 import BeautifulSoup
+
+url = input("Enter URL: ")
+
+page = requests.get(url)
+
+soup = BeautifulSoup(page.text, "html.parser")
+
+print("Crawled:", url)
+
+for link in soup.find_all("a"):
+
+    if link.get("href"):
+        print(link.get("href"))
+
+
+# ============================================================
+# PRACTICAL 8A — PAGERANK
+# ============================================================
+
+import numpy as np
+
+n = int(input("Enter number of nodes: "))
+
+M = np.zeros((n,n))
+
+links = int(input("Enter number of links: "))
+
+for i in range(links):
+
+    a,b = map(int, input("Enter link: ").split())
+
+    M[b-1][a-1] = 1
+
+for j in range(n):
+
+    total = sum(M[:,j])
+
+    if total != 0:
+        M[:,j] = M[:,j] / total
+
+print("Transition Matrix:")
+print(M)
+
+PR = np.ones(n) / n
+
+iterations = int(input("Enter iterations: "))
+
+for i in range(iterations):
+
+    PR = np.dot(M, PR)
+
+    print("Iteration", i + 1, PR)
+
+print("Highest:", np.argmax(PR) + 1)
+
+
+# ============================================================
+# PRACTICAL 8B — HITS
+# ============================================================
+
+nodes = input("Enter nodes: ").split()
+
+n = len(nodes)
+
+links = int(input("Enter number of links: "))
+
+graph = {}
+
+for node in nodes:
+    graph[node] = []
+
+for i in range(links):
+
+    a,b = input("Enter link: ").split()
+
+    graph[a].append(b)
+
+hub = {}
+authority = {}
+
+for node in nodes:
+    hub[node] = 1
+    authority[node] = 1
+
+for i in range(3):
+
+    for node in nodes:
+
+        authority[node] = 0
+
+        for x in nodes:
+
+            if node in graph[x]:
+                authority[node] = authority[node] + hub[x]
+
+    for node in nodes:
+
+        hub[node] = 0
+
+        for x in graph[node]:
+            hub[node] = hub[node] + authority[x]
+
+print("Authority:")
+
+for node in nodes:
+    print(node, authority[node])
+
+print("Hub:")
+
+for node in nodes:
+    print(node, hub[node])
+
+
+# ============================================================
+# PRACTICAL 9 — RANK SVM
+# ============================================================
+
+import numpy as np
+from sklearn.svm import SVC
+
+X = np.array([
+    [2,5],
+    [4,3],
+    [6,7],
+    [5,2],
+    [7,6],
+    [3,4]
+])
+
+y = np.array([0,0,1,1,1,0])
+
+pairs = []
+labels = []
+
+for i in range(6):
+
+    for j in range(6):
+
+        if y[i] > y[j]:
+
+            pairs.append(X[i] - X[j])
+            labels.append(1)
+
+model = SVC(kernel="linear")
+
+model.fit(pairs, labels)
+
+score = X @ model.coef_[0]
+
+rank = np.argsort(score)[::-1]
+
+print("Ranked Documents:")
+
+for i in rank:
+
+    print("D", i + 1, "Score =", round(score[i],2))
+
+
+# ============================================================
+# PRACTICAL 10A — EXTRACTIVE TEXT SUMMARIZATION
+# ============================================================
+
+import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from collections import Counter
+
+text = """Artificial Intelligence is changing the world.
+Machine learning is an important part of Artificial Intelligence.
+AI is used in healthcare and education.
+AI helps computers learn from data."""
+
+sentences = sent_tokenize(text)
+
+words = word_tokenize(text.lower())
+
+freq = Counter(words)
+
+scores = {}
+
+for sentence in sentences:
+
+    words = word_tokenize(sentence.lower())
+
+    scores[sentence] = sum(freq[word] for word in words)
+
+summary = sorted(
+    sentences,
+    key=lambda x: scores[x],
+    reverse=True
+)[:2]
+
+print("Summary:")
+
+print(" ".join(summary))
+
+
+# ============================================================
+# PRACTICAL 10B — QUESTION ANSWERING
+# ============================================================
+
+import nltk
+from nltk.tokenize import word_tokenize, sent_tokenize
+
+text = """Python is a programming language.
+Python was created by Guido van Rossum.
+Python is widely used in Artificial Intelligence.
+Python was first released in 1991."""
+
+question = input("Enter question: ").lower()
+
+q = set(word_tokenize(question))
+
+best = ""
+max_match = 0
+
+for sentence in sent_tokenize(text):
+
+    words = set(word_tokenize(sentence.lower()))
+
+    match = len(q & words)
+
+    if match > max_match:
+
+        max_match = match
+        best = sentence
+
+print("Answer:", best)
